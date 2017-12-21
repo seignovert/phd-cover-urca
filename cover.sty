@@ -1,0 +1,278 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{thcover}[2016/12/14 v4.0 Build coverpage 1 and 4 for french thesis (J.Hare)]
+\RequirePackage{ifpdf}
+\RequirePackage{graphicx}
+\RequirePackage{geometry}[2010/03/13]
+\RequirePackage{datetime}
+\RequirePackage{etoolbox}
+\RequirePackage{calc}
+\RequirePackage{adjustbox}
+\RequirePackage{xstring}
+\RequirePackage{wallpaper}
+\newcommand{\numchars}[1]{\noindent The string ``#1'' has {\StrLen{#1}} characters.\\}
+\newcommand{\textcl@p}[1]{{\hbox to 0pt{\hss#1\hss}}}
+%\RequirePackage{hyperref}% is not required, but if loaded,
+% is used  to set  PDF metadata (if PDF mode is active)
+
+%initize optionnals
+\gdef\@ecoledoct{}
+\gdef\@discipline{}
+\gdef\@specialite{}
+\gdef\@lab{}
+\gdef\@date{\today}
+\gdef\@head{}
+\gdef\@logoone{}
+\gdef\@logotwo{}
+\gdef\@logothree{}
+\gdef\@titlemeta{}
+\gdef\@titlemetaen{}
+
+%parse provided values
+\def\head#1{\gdef\@head{#1}}
+\def\logos#1#2#3{\gdef\@logoone{#1}%
+	\ifx\empty#2\relax\else\gdef\@logotwo{#2}\fi%
+	\ifx\empty#3\relax\else\gdef\@logothree{#3}\fi}
+\def\univ#1{\gdef\@univ{#1}}
+\def\@univ{\@latex@error{No \noexpand\univ given}\@ehc}
+\def\ecoledoct#1{\gdef\@ecoledoct{#1}}
+\def\discipline#1{\gdef\@discipline{#1}}
+\def\specialite#1{\gdef\@specialite{#1}}
+\def\lab#1{\gdef\@lab{#1}}
+\def\soutenue#1{\gdef\@soutenue{#1}}
+\def\@soutenue{\@latex@warning@no@line{No \noexpand\soutenue given}}
+\def\firstname#1{\gdef\@firstname{#1}}
+\def\@firstname{\@latex@warning@no@line{No \noexpand\firstname given}}
+\def\lastname#1{\gdef\@lastname{#1}}
+\def\@lastname{\@latex@warning@no@line{No \noexpand\lastname given}}
+%\def\phdname#1{\gdef\@phdname{#1}}
+%\def\@phdname{\@latex@warning@no@line{No \noexpand\phdname given}}
+\long\def\title#1{\gdef\@title{#1}}
+\def\@title{\@latex@error{No \noexpand\title given}\@ehc}
+\long\def\titlemeta#1{\gdef\@titlemeta{#1}}
+\def\date#1{\gdef\@date{#1}}
+\gdef\@date{\today}
+\long\def\jury#1{\gdef\@jury{#1}}
+\def\@jury{\@latex@warning@no@line{No \noexpand\jury given}}
+\long\def\resume#1{\gdef\@resume{#1}}
+\def\@resume{\@latex@warning@no@line{No \noexpand\resume given}}
+\long\def\motscles#1{\gdef\@motscles{#1}}
+\def\@motscles{\@latex@warning@no@line{No \noexpand\motscles given}}
+\long\def\titleen#1{\gdef\@titleen{#1}}
+\def\@titleen{\@latex@warning@no@line{No \noexpand\titleen given}}
+\long\def\titlemetaen#1{\gdef\@titlemetaen{#1}}
+\long\def\abstract#1{\gdef\@abstract{#1}}
+\def\@abstract{\@latex@warning@no@line{No \noexpand\abstract given}}
+\long\def\keywords#1{\gdef\@keywords{#1}}
+\def\@keywords{\@latex@warning@no@line{No \noexpand\keywords given}}
+
+
+\newlength{\th@skip}
+\newlength{\th@used}
+\newlength{\th@tmp}
+
+\long\def\frontcover{%
+    \begingroup
+    \newgeometry{left=12mm,right=12mm,bottom=15mm}
+    % determine used vertical space
+    \begin{adjustbox}{minipage=\linewidth,gstore totalheight=\th@used,gobble}
+	    \begin{center}%
+	    \strut\vskip -3cm%
+	    \ifdefempty{\@head}{\par}{\large\bfseries\@head\par}%
+	    \ifdefempty{\@logoone}{\par}{\vskip 2cm}%
+	    \bfseries%
+	    {\Large THÈSE DE DOCTORAT\\ Université~\@univ \par}%
+	    \ifdefempty{\@specialite}{\par}{%
+	    		\medskip{\Large Spécialité~: \@specialite\par}}%
+	    \ifdefempty{\@ecoledoct}{\par}{%
+	       	\medskip {\large\bfseries École doctorale~: \@ecoledoct\par}}%
+	    présentée par\par\bigskip{\LARGE \@firstname~\@lastname\par}%
+	    pour obtenir le grade de~:\par\bigskip{\large DOCTEUR \@univ\par}%
+	    Sujet de la thèse~:\par {\LARGE\@title\par}%
+	    {\large Soutenance prévue le \@date\par}%
+	    devant le jury composé de~:\par%
+			\begin{large}%
+	    \begin{tabular}{p{0.5in}lllp{2in}}%
+	        \@jury%
+	    \end{tabular}%
+	    \end{large}%
+	  \end{center}
+	\end{adjustbox}
+
+	%compute spacing
+    \setlength{\th@tmp}{\textheight-\th@used}
+    \setlength{\th@skip}{\th@tmp*\real{0.1}}
+    \addtolength{\th@skip}{0pt plus 10mm minus 10mm}
+    \global\th@skip=\th@skip
+    %build page
+    \pagestyle{empty}%
+    \setcounter{page}{-1}
+    \begin{center}%
+    \strut\vskip -3cm%
+    \ifdefempty{\@head}{\par}{\large\bfseries\@head\par}%
+    \ifdefempty{\@logoone}{\par}{\centerline{%
+        \rlap{\includegraphics[height=2.2cm]{\@logoone}}\hfill%
+        \ifdefempty{\@logotwo}{\hfill\textcl@p{ }\hfill}{%
+        		\hfill\textcl@p{\includegraphics[height=2.2cm]{\@logotwo}}\hfill}%
+        \ifdefempty{\@logothree}{\relax}{%
+             \hfill\llap{\includegraphics[height=2.2cm]{\@logothree}}}%
+        }%
+    }%
+		\vskip \th@skip%
+		\Large%
+		{\scshape Université~\@univ\par}%
+		\ifdefempty{\@ecoledoct}{\par}{%
+			\medskip{École doctorale~: \og\@ecoledoct\fg\par}}%
+		\vskip \th@skip%
+		{\Huge\bfseries\scshape Thèse\par}
+		\vskip \th@skip%
+		pour obtenir le grade de~\par%
+		{\LARGE\scshape\bfseries Docteur de l'Université \@univ\par}%
+		\vskip 0.5\th@skip%
+		\ifdefempty{\@discipline}{\par}{%
+			\medskip{{\bfseries Discipline~:} \@discipline\par}}%
+		\ifdefempty{\@specialite}{\par}{%
+			\medskip{{\bfseries Spécialité~:} \@specialite\par}}%
+		\vskip \th@skip%
+		Présentée et soutenue \@soutenue~par\par%
+		\medskip{\huge\bfseries\@firstname~\scshape\@lastname\par}%
+		\vskip 0.5\th@skip%
+		Le \@date\par%
+		\vskip \th@skip%
+		\hrulefill\\[1ex]
+		{\Huge\bfseries\@title\par}%
+		\hrulefill\\[1ex]
+		\vskip \th@skip%
+		{\bfseries Jury~:\par}%
+		\vskip 0.5\th@skip%
+		\begin{large}%
+		\begin{tabular}{p{.75cm}lllp{5cm}}%
+		\@jury%
+		\end{tabular}%
+    \end{large}%
+  \end{center}%
+  \par
+  \vskip \th@skip%
+	\ThisLLCornerWallPaper{1}{footer}
+  \restoregeometry
+  \cleardoublepage
+  \endgroup
+}
+
+%%%%%%%%%%% Start of back page
+
+\newcommand{\clearevenpage}{\cleardoublepage\if@twoside \ifodd\c@page
+    \hbox{}\clearpage\if@twocolumn\hbox{}\clearpage\fi\fi\fi}
+
+\newenvironment{quoteabstract}
+  {\small\list{}{\rightmargin=5mm \leftmargin=5mm}%
+   \item\relax}
+  {\endlist}
+%\newif\ifresumetolong
+%\newif\ifabstracttolong
+\gdef\absmaxlength{1700}
+\newtoggle{restolong}
+\newtoggle{abstolong}
+
+\newlength{\th@bskip}
+
+\long\def\backcover{%
+	\StrLen{\@resume}[\resumelen]
+	\StrLen{\@abstract}[\abstractlen]
+    \ifnum\abstractlen>\absmaxlength \toggletrue{abstolong}\else\togglefalse{abstolong}\fi
+    \ifnum\resumelen>\absmaxlength \toggletrue{restolong}\else\togglefalse{restolong}\fi
+    \iftoggle{restolong}{\PackageWarningNoLine{thcover}{%
+    R'esum'e in thcoverdata.tex is \resumelen\space chars long, \MessageBreak but the max is \absmaxlength, including spaces}}{\relax}
+    \iftoggle{abstolong}{\PackageWarningNoLine{thcover}{%
+    Abstract in thcoverdata.tex is \abstractlen\space  chars long, \MessageBreak but the max is \absmaxlength, including spaces.}}{\relax}
+    \begingroup
+    \pagestyle{empty}%
+    \setlength{\th@bskip}{15mm plus 10mm minus 10mm}%
+    \newgeometry{left=20mm,right=20mm,bottom=20mm,top=20mm}
+	  \clearevenpage
+	  \flushbottom
+    %\vskip \th@skip%
+		\vspace*{\fill}
+		\begin{center}\Large\bfseries
+    %\framebox[\linewidth][c]{\rule[-0.5ex]{0pt}{3ex}\@author\hfil\hfil\@date}\\[\th@bskip]
+	  \hrulefill\\[1ex]
+   	{\Large\bfseries\@title\par}
+   	\hrulefill
+   	\end{center}
+   	\adjustbox{max width=\textwidth,max height=0.40\textheight,center}{
+	\parbox{0.95\linewidth}{
+   	\noindent\textbf{Résumé}~:~\normalfont\normalsize%
+   	\@resume\hfill\par
+   	\medskip
+   	\noindent\textbf{Mots clés}~:~\normalfont\normalsize%
+   	\@motscles}
+   	}
+		\vskip \th@bskip%
+   	\begin{center}
+   	\hrulefill\\[1ex]
+   	{\Large\bfseries\@titleen\par}
+   	\hrulefill
+   	\end{center}
+   	\adjustbox{max width=\textwidth,max height=0.36\textheight,center}{
+	\parbox{0.95\linewidth}{
+   	\noindent\textbf{Abstract}:~\normalfont\normalsize%
+   	\@abstract\hfill\par
+   	\medskip
+   	\noindent\textbf{Keywords}~:~\normalfont\normalsize%
+   	\@keywords}
+   	}
+		\vskip \th@bskip%
+   	\hrulefill
+		\vskip \th@skip%
+		\ifdefempty{\@discipline}{\par}{%
+			\medskip{{\bfseries Discipline~:} \@discipline\par}}%
+		\ifdefempty{\@specialite}{\par}{%
+			\medskip{{\bfseries Spécialité~:} \@specialite\par}}%
+		\begin{flushright}
+			\small%
+			{\scshape Université~\@univ}\\%
+			\ifdefempty{\@lab}{\par}{%
+				\@lab\par}%
+		\end{flushright}
+		\vspace*{\fill}
+	  \ThisLLCornerWallPaper{1}{footer}
+   	\restoregeometry
+   	\endgroup
+}
+
+\def\coverd@tafile{}
+
+\ifdef{\coverdatafile}%
+	{\typeout{using \coverdatafile}\def\coverd@tafile{\coverdatafile}}%
+	{\typeout{using cover.tex}\def\coverd@tafile{cover.tex}}
+
+
+\IfFileExists{\coverd@tafile}{
+% loadfile
+\typeout{\coverd@tafile exists}
+\input{\coverd@tafile}
+%add metadata
+\AtBeginDocument{
+\ifx\@titlemeta\empty\let\@titlemeta=\@title\fi
+\ifx\@titlemetaen\empty\let\@titlemetaen=\@titleen\fi
+\ifpdf
+	\@ifpackageloaded{hyperref}{
+		\hypersetup{
+			pdftitle={\@titlemeta},
+			pdfauthor={\@firstname \@lastname},
+			pdfsubject={\@titlemetaen},
+			pdfkeywords={\@motscles,\@keywords}
+	  }
+	}{
+	  \pdfinfo {
+		/Title (\@titlemeta)
+		/Creator (TeX)
+		/Author (\@firstname \@lastname)
+		/Subject (\@titlemetaen)
+		/Keywords (\@motscles, \@keywords)
+		}
+	}%
+\fi
+}
+}{\@latex@warning@no@line{Metadata File "\coverd@tafile" not found}}
+\endinput
+%end of thesiscoverpage package
